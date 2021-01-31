@@ -1,0 +1,76 @@
+    docker run \
+    --detach \
+    --name=esp \
+    --publish=80:9000 \
+    --net=esp_net \
+    gcr.io/endpoints-release/endpoints-runtime:1 \
+    --service=vision.endpoints.central-hold-295019.cloud.goog \
+    --rollout_strategy=managed \
+    --http2_port=9000 \
+    --backend=grpc://vision:5001
+
+
+docker run --name=esp \
+ -p 443:443 \
+ --add-host docker:35.235.51.11 \
+ --volume=/home/henri_gough/Code/vision/certs:/etc/nginx/ssl \
+    gcr.io/endpoints-release/endpoints-runtime:1 \
+ --service=vision.endpoints.central-hold-295019.cloud.goog \
+ --rollout_strategy=managed \
+ --backend=grpc://docker:5051 \
+ --ssl_port=443
+ --enable_debug
+
+
+
+docker run --name=esp \
+ --publish=443:9000 \
+ --net=esp_net \
+ -v /honme/henri_gough/Code/certs:/etc/esp/ssl \
+ -v /home/henri_gough/Code/python_vision:/app \
+  gcr.io/endpoints-release/endpoints-runtime:2 \
+ --service=vision.endpoints.central-hold-295019.cloud.goog \
+ --rollout_strategy=managed \
+ --backend=grpcs://172.18.0.10:5051  \
+ --listener_port=9000 \
+ --generate_self_signed_cert \
+ --log_request_headers=grpc,grpcs,http,https
+
+docker run --name=esp \
+ --publish=443:9000 \
+ --net=esp_net \
+ --volume=/home/henri_gough/Code/certs:/etc/esp/ssl \
+  gcr.io/endpoints-release/endpoints-runtime:2 \
+ --service=vision.endpoints.central-hold-295019.cloud.goog \
+ --ssl_server_cert_path=/etc/esp/ssl \
+ --ssl_backend_client_cert_path=/etc/esp/ssl \
+ --rollout_strategy=managed \
+ --backend=grpcs://172.18.0.10:5051  \
+ --ssl_server_cert_path=/etc/esp/ssl \
+ --listener_port=9000
+
+!!! THIS COMMAND IS THE WORKING ONE !!!
+ docker run --name=esp \
+ --publish=443:443 \
+ --net esp_net \
+ -v /home/henri_gough/Code/certs:/certs \
+ -v /home/henri_gough/Code/certs:/etc/nginx/ssl \
+ gcr.io/endpoints-release/endpoints-runtime:1 \
+ --service=vision.endpoints.central-hold-295019.cloud.goog \
+ --rollout_strategy=managed \
+ --backend=grpc://172.18.0.10:5051 \
+ --ssl_port=443 \
+ --enable_grpc_backend_ssl \
+ --grpc_backend_ssl_root_certs_file=/certs/dev.crt
+ 
+docker run \
+--name dotnet \
+-it \
+--net esp_net --ip 172.18.0.10 \
+-v /home/henri_gough/Code/vision/:/vision \
+-v /home/henri_gough/Code/certs:/etc/esp/ssl \
+ mcr.microsoft.com/dotnet/sdk bash
+
+ 
+ 
+ --grpc_backend_ssl_private_key_file=/certs/dev.key

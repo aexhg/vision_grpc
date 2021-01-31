@@ -1,0 +1,19 @@
+syntax="proto3";
+
+
+option csharp_namespace = "vision";
+package vision;
+
+message VisionMessage {
+    string meta = 1;
+    bytes data = 2;
+}
+
+message Response {
+    bool success = 1;
+}
+
+service Vision {
+    rpc Load (VisionMessage) returns (Response);
+}
+

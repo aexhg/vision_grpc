@@ -1,0 +1,11 @@
+*
+
+!.gitignore
+!Program.cs
+!Startup.cs
+!vision.csproj
+
+!*/
+!/Services/**
+!/Protos/**
+!docker_run_command.txt
